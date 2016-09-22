@@ -263,7 +263,7 @@ if(${CINCH_TOP_LEVEL_PROJECT})
                 LIBRARIES ${PFUNIT_LIBRARY})
         endif(FORTRAN_ENABLED)
 
-        if(MPI_${MPI_LANGUAGE}_FOUND AND NOT legion_FOUND)
+        if(MPI_${MPI_LANGUAGE}_FOUND AND NOT Legion_FOUND)
             cinch_add_unit_execution_policy(SERIAL
                 ${CMAKE_SOURCE_DIR}/cinch/gtest-auxiliary/gtest-standard.cc
                 FLAGS ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS}
@@ -277,36 +277,25 @@ if(${CINCH_TOP_LEVEL_PROJECT})
                 LIBRARIES ${MPI_${MPI_LANGUAGE}_LIBRARIES}
                 EXEC ${MPIEXEC}
                 EXEC_THREADS ${MPIEXEC_NUMPROC_FLAG})
-        elseif(NOT MPI_${MPI_LANGUAGE}_FOUND AND legion_FOUND)
+        elseif(NOT MPI_${MPI_LANGUAGE}_FOUND AND Legion_FOUND)
             cinch_add_unit_execution_policy(SERIAL
-                ${CMAKE_SOURCE_DIR}/cinch/gtest-auxiliary/gtest-standard.cc
-               FLAGS ${LEGION_CXX_FLAGS}
-               INCLUDES ${LEGION_INCLUDE_DIRS}
-               LIBRARIES ${LEGION_LIBRARIES} ${LEGION_LIB_FLAGS})
+                ${CMAKE_SOURCE_DIR}/cinch/gtest-auxiliary/gtest-standard.cc)
 
             cinch_add_unit_execution_policy(LEGION
-               ${CMAKE_SOURCE_DIR}/cinch/gtest-auxiliary/gtest-legion.cc
-               FLAGS ${LEGION_CXX_FLAGS}
-               INCLUDES ${LEGION_INCLUDE_DIRS}
-               LIBRARIES ${LEGION_LIBRARIES} ${LEGION_LIB_FLAGS})
+               ${CMAKE_SOURCE_DIR}/cinch/gtest-auxiliary/gtest-legion.cc)
+
         elseif(MPI_${MPI_LANGUAGE}_FOUND AND legion_FOUND)
             cinch_add_unit_execution_policy(SERIAL
                 ${CMAKE_SOURCE_DIR}/cinch/gtest-auxiliary/gtest-standard.cc
-                FLAGS ${LEGION_CXX_FLAGS}
-                    ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS}
-                INCLUDES ${LEGION_INCLUDE_DIRS}
-                    ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH}
-                LIBRARIES ${LEGION_LIBRARIES} ${LEGION_LIB_FLAGS}
-                    ${MPI_${MPI_LANGUAGE}_LIBRARIES})
+                FLAGS ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS}
+                INCLUDES ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH}
+                LIBRARIES ${MPI_${MPI_LANGUAGE}_LIBRARIES})
 
             cinch_add_unit_execution_policy(MPILEGION
                 ${CMAKE_SOURCE_DIR}/cinch/gtest-auxiliary/gtest-mpilegion.cc
-                FLAGS ${LEGION_CXX_FLAGS}
-                    ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS}
-                INCLUDES ${LEGION_INCLUDE_DIRS}
-                    ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH}
-                LIBRARIES ${LEGION_LIBRARIES} ${LEGION_LIB_FLAGS}
-                    ${MPI_${MPI_LANGUAGE}_LIBRARIES}
+                FLAGS ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS}
+                INCLUDES ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH}
+                LIBRARIES ${MPI_${MPI_LANGUAGE}_LIBRARIES}
                 EXEC ${MPIEXEC}
                 EXEC_THREADS ${MPIEXEC_NUMPROC_FLAG}) 
         else()
@@ -687,6 +676,15 @@ if(${CINCH_TOP_LEVEL_PROJECT})
                     target_link_libraries(${unit_target_name} ${library})
                 endforeach(library)
             endif(NOT "${unit_target_libraries}" STREQUAL "None")
+
+            if (Legion_FOUND)
+                target_link_libraries(${unit_target_name} ${LEGION_LIBRARIES})
+            endif (Legion_FOUND)
+
+            if (MPI_${MPI_LANGUAGE}_FOUND)
+                target_link_libraries(${unit_target_name} 
+                    ${MPI_${MPI_LANGUAGE}_LIBRARIES})
+            endif (MPI_${MPI_LANGUAGE}_FOUND)
 
             #------------------------------------------------------------------#
             # Add include and link options
