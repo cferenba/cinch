@@ -284,7 +284,7 @@ if(${CINCH_TOP_LEVEL_PROJECT})
             cinch_add_unit_execution_policy(LEGION
                ${CMAKE_SOURCE_DIR}/cinch/gtest-auxiliary/gtest-legion.cc)
 
-        elseif(MPI_${MPI_LANGUAGE}_FOUND AND legion_FOUND)
+        elseif(MPI_${MPI_LANGUAGE}_FOUND AND Legion_FOUND)
             cinch_add_unit_execution_policy(SERIAL
                 ${CMAKE_SOURCE_DIR}/cinch/gtest-auxiliary/gtest-standard.cc
                 FLAGS ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS}
